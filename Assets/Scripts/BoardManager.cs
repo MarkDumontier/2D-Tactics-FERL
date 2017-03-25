@@ -9,6 +9,8 @@ public class BoardManager : MonoBehaviour {
     public int columns = 8;                                     //Number of columns in our game board.
     public int rows = 8;                                        //Number of rows in our game board.
     public GameObject[] floorTiles;                             //Array of floor prefabs.
+    public GameObject cursor;                                   //Cursor
+    public Vector3 cursorStartPosition;                         //Cursor Start Position
 
     private Transform boardHolder;                              //A variable to store a reference to the transform of our Board object.
     private List<Vector3> gridPositions = new List<Vector3> (); //A list of possible locations to place tiles.
@@ -54,6 +56,12 @@ public class BoardManager : MonoBehaviour {
                 instance.transform.SetParent(boardHolder);
             }
         }
+
+        //Instantiate cursor at (0, 0)
+        GameObject cursorInstance = Instantiate(cursor, cursorStartPosition, Quaternion.identity) as GameObject;
+
+        //Set the parent of cursor to boardHolder to avoid cluttering hierarchy.
+        cursorInstance.transform.SetParent(boardHolder);
     }
 
     //SetupScene initializes our level and calls the previous functions to lay out the game board
