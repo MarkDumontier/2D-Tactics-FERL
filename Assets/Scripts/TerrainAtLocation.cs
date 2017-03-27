@@ -7,11 +7,11 @@ public static class TerrainAtLocation
 
     private static Collider2D colliderOnSpace; //Used to store the collider we are examining
     private static int moveCost;                //Used to store the move cost value of the tile
-    
+
 
     //Takes a Vector2 location. Returns true if a terrain tile exists at this location, otherwise returns false.
     public static bool IsPresent(Vector2 location)
-    {    
+    {
         //Check if a terrain tile exists here. If not, return false.
         if (GetCollider(location) == null)
         {

@@ -2,21 +2,24 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class CursorMove : MonoBehaviour {
+public class CursorMove : MonoBehaviour
+{
 
     private Rigidbody2D rb2D;                               //The Rigidbody2D component attached to this object.
     private bool isPaused = false;                          //Bool used to keep delay movement so that cursor doesn't move too quickly.
     public float movementPauseTime = 0.1f;                  //Time to wait between movement steps.
-    
 
-	// Use this for initialization
-	void Start () {
+
+    // Use this for initialization
+    void Start()
+    {
         //Get a component refrence to this object's Rigidbody2D.
         rb2D = GetComponent<Rigidbody2D>();
-	}
-	
-	// Update is called once per frame
-	void Update () {
+    }
+
+    // Update is called once per frame
+    void Update()
+    {
 
 
         int horizontal = 0;     //Used to store the horizontal move direction
@@ -29,10 +32,10 @@ public class CursorMove : MonoBehaviour {
         vertical = (int)(Input.GetAxisRaw("Vertical"));
 
         //Check if we have a non-zero value for horizontal or vertical.
-        if( horizontal != 0 || vertical != 0)
+        if (horizontal != 0 || vertical != 0)
         {
             //Check to see if we are waiting between movement steps.
-            if(isPaused == false)
+            if (isPaused == false)
             {
                 //Attempt to move. The cursor will not move if its destination is not on a terrain tile.
                 Move(horizontal, vertical);
@@ -45,7 +48,7 @@ public class CursorMove : MonoBehaviour {
     }
 
     //Function to move our cursor. 
-    private bool Move (int xDir, int yDir)
+    private bool Move(int xDir, int yDir)
     {
         //Get the cursor's start location.
         Vector2 start = transform.position;

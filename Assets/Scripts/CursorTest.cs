@@ -10,7 +10,9 @@ public class CursorTest : MonoBehaviour {
 	// Use this for initialization
 	void Start ()
     {
+
         rb2D = GetComponent<Rigidbody2D>();
+
 	}
 	
     void Update()
@@ -20,7 +22,6 @@ public class CursorTest : MonoBehaviour {
             Debug.Log(TerrainAtLocation.MoveCost(rb2D.position));
         }
         else Debug.Log("Nothing here.");
-
     }
 
 }
