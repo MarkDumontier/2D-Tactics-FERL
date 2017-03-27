@@ -79,6 +79,16 @@
     <Compile Include="Assets\Scripts\CursorTest.cs" />
     <Compile Include="Assets\Scripts\GameManager.cs" />
     <Compile Include="Assets\Scripts\Loader.cs" />
+    <Compile Include="Assets\Scripts\Priority Queue\FastPriorityQueue.cs" />
+    <Compile Include="Assets\Scripts\Priority Queue\FastPriorityQueueNode.cs" />
+    <Compile Include="Assets\Scripts\Priority Queue\GenericPriorityQueue.cs" />
+    <Compile Include="Assets\Scripts\Priority Queue\GenericPriorityQueueNode.cs" />
+    <Compile Include="Assets\Scripts\Priority Queue\IFixedSizePriorityQueue.cs" />
+    <Compile Include="Assets\Scripts\Priority Queue\IPriorityQueue.cs" />
+    <Compile Include="Assets\Scripts\Priority Queue\Properties\AssemblyInfo.cs" />
+    <Compile Include="Assets\Scripts\Priority Queue\SimplePriorityQueue.cs" />
+    <Compile Include="Assets\Scripts\Priority Queue\StablePriorityQueue.cs" />
+    <Compile Include="Assets\Scripts\Priority Queue\StablePriorityQueueNode.cs" />
     <Compile Include="Assets\Scripts\TerrainAtLocation.cs" />
     <Compile Include="Assets\Scripts\TerrainTile.cs" />
     <Compile Include="Assets\Scripts\UnitAtLocation.cs" />

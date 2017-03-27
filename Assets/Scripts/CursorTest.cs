@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Priority_Queue;
 
 public class CursorTest : MonoBehaviour {
 
@@ -12,22 +13,22 @@ public class CursorTest : MonoBehaviour {
     {
 
         rb2D = GetComponent<Rigidbody2D>();
-
 	}
 	
     void Update()
     {
-        if (UnitAtLocation.IsPresent(rb2D.position))
-        {
-            Debug.Log("Unit here.");
-        }
-        else Debug.Log("Nothing here.");
-
-        //if (TerrainAtLocation.IsPresent(rb2D.position))
+        //if (UnitAtLocation.IsPresent(rb2D.position))
         //{
-        //    Debug.Log(TerrainAtLocation.MoveCost(rb2D.position));
+        //    Debug.Log("Unit here.");
         //}
         //else Debug.Log("Nothing here.");
+
+        if (TerrainAtLocation.IsPresent(rb2D.position))
+        {
+            TerrainTile tile = TerrainAtLocation.GetTile(rb2D.position);
+            Debug.Log(tile.GetLocation());
+        }
+        else Debug.Log("Nothing here.");
     }
 
 }
