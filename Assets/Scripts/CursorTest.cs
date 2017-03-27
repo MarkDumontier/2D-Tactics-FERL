@@ -17,11 +17,17 @@ public class CursorTest : MonoBehaviour {
 	
     void Update()
     {
-        if (TerrainAtLocation.IsPresent(rb2D.position))
+        if (UnitAtLocation.IsPresent(rb2D.position))
         {
-            Debug.Log(TerrainAtLocation.MoveCost(rb2D.position));
+            Debug.Log("Unit here.");
         }
         else Debug.Log("Nothing here.");
+
+        //if (TerrainAtLocation.IsPresent(rb2D.position))
+        //{
+        //    Debug.Log(TerrainAtLocation.MoveCost(rb2D.position));
+        //}
+        //else Debug.Log("Nothing here.");
     }
 
 }
