@@ -12,6 +12,9 @@ public class BoardManager : MonoBehaviour {
     public GameObject cursor;                                   //Cursor
     public Vector3 cursorStartPosition;                         //Cursor Start Position
 
+    public GameObject playerUnit;                               //Player unit (used for testing)
+    public Vector3 playerStartPosition;                         //Player unit start position (used for testing)
+
     private Transform boardHolder;                              //A variable to store a reference to the transform of our Board object.
     private List<Vector3> gridPositions = new List<Vector3> (); //A list of possible locations to place tiles.
 
@@ -60,8 +63,12 @@ public class BoardManager : MonoBehaviour {
         //Instantiate cursor at (0, 0)
         GameObject cursorInstance = Instantiate(cursor, cursorStartPosition, Quaternion.identity) as GameObject;
 
-        //Set the parent of cursor to boardHolder to avoid cluttering hierarchy.
+        //Instantiate a playerUnit at (1, 1)
+        GameObject playerUnitInstance = Instantiate(playerUnit, playerStartPosition, Quaternion.identity) as GameObject;
+
+        //Set the parent of cursor and player to boardHolder to avoid cluttering hierarchy.
         cursorInstance.transform.SetParent(boardHolder);
+        playerUnitInstance.transform.SetParent(boardHolder);
     }
 
     //SetupScene initializes our level and calls the previous functions to lay out the game board

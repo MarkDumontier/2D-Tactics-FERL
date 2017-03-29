@@ -54,18 +54,51 @@ public static class TerrainAtLocation
         return tile;
     }
 
-    //Takes a Vector2 location. Returns the movement cost of the tile on this location as an int.
-    public static int MoveCost(Vector2 location)
+    //Takes a TerrainTile. Returns a list of neighboring tiles.
+    public static List<TerrainTile> GetNeighbors(TerrainTile tile)
     {
-        //Get the Collider2D of the terrain tile.
-        colliderOnSpace = GetCollider(location);
-        //Get the GameObject associated with that collider.
-        GameObject gameOb = colliderOnSpace.gameObject;
-        //Get the TerrainTile script from the tile.
-        TerrainTile tile = gameOb.GetComponent<TerrainTile>();
-        //Get the moveCost from the TerrainTile script.
-        moveCost = tile.moveCost;
-        //Return the moveCost.
-        return moveCost;
+        List<TerrainTile> neighbors = new List<TerrainTile>();
+        Vector2 tileLocation = tile.GetLocation();
+        float xCoord;
+        float yCoord;
+
+        //Add the tile to the North.
+        xCoord = tileLocation.x;
+        yCoord = tileLocation.y + 1;
+        Vector2 newTile = new Vector2(xCoord, yCoord);
+        if (TerrainAtLocation.IsPresent(newTile))
+        {
+            neighbors.Add(TerrainAtLocation.GetTile(newTile));
+        }
+
+        //Add the tile to the East
+        xCoord = tileLocation.x + 1;
+        yCoord = tileLocation.y;
+        newTile = new Vector2(xCoord, yCoord);
+        if (TerrainAtLocation.IsPresent(newTile))
+        {
+            neighbors.Add(TerrainAtLocation.GetTile(newTile));
+        }
+
+        //Add the tile to the South
+        xCoord = tileLocation.x;
+        yCoord = tileLocation.y - 1;
+        newTile = new Vector2(xCoord, yCoord);
+        if (TerrainAtLocation.IsPresent(newTile))
+        {
+            neighbors.Add(TerrainAtLocation.GetTile(newTile));
+        }
+
+        //Add the tile to the West
+        xCoord = tileLocation.x - 1;
+        yCoord = tileLocation.y;
+        newTile = new Vector2(xCoord, yCoord);
+        if (TerrainAtLocation.IsPresent(newTile))
+        {
+            neighbors.Add(TerrainAtLocation.GetTile(newTile));
+        }
+
+        return neighbors;
     }
+
 }
