@@ -5,9 +5,14 @@ using UnityEngine;
 public class CursorMove : MonoBehaviour
 {
 
-    private Rigidbody2D rb2D;                               //The Rigidbody2D component attached to this object.
-    private bool isPaused = false;                          //Bool used to keep delay movement so that cursor doesn't move too quickly.
     public float movementPauseTime = 0.1f;                  //Time to wait between movement steps.
+
+    public delegate void CursorMoveAction();
+    public static event CursorMoveAction OnMoved;
+
+    protected Rigidbody2D rb2D;                               //The Rigidbody2D component attached to this object.
+    protected bool isPaused = false;                          //Bool used to keep delay movement so that cursor doesn't move too quickly.
+
 
 
     // Use this for initialization
@@ -18,10 +23,15 @@ public class CursorMove : MonoBehaviour
     }
 
     // Update is called once per frame
-    void Update()
+    void FixedUpdate()
     {
+        //Checks for direction input. If there is direction input, attempt to move.
+        WatchForMove();
+    }
 
-
+    //Checks for direction input. If there is direction input, attempt to move.
+    public void WatchForMove()
+    {
         int horizontal = 0;     //Used to store the horizontal move direction
         int vertical = 0;       //Used to store the vertical move direction
 
@@ -37,18 +47,29 @@ public class CursorMove : MonoBehaviour
             //Check to see if we are waiting between movement steps.
             if (isPaused == false)
             {
+
                 //Attempt to move. The cursor will not move if its destination is not on a terrain tile.
-                Move(horizontal, vertical);
-                //Disable movement until a given time has passed.
-                isPaused = true;
-                //Coroutine is used as a timer to re-enable movement after a given time.
-                StartCoroutine(PauseMovement());
+                bool didMove = Move(horizontal, vertical);
+
+                if (didMove)
+                {
+                    //If the cursor moves, trigger the OnMove event as long as something is subscribed to it.
+                    if (OnMoved != null)
+                    {
+                        OnMoved();
+                    }  
+                    //Disable movement until a given time has passed.
+                    isPaused = true;
+                    //Coroutine is used as a timer to re-enable movement after a given time.
+                    StartCoroutine(PauseMovement());
+                }
+
             }
         }
     }
 
     //Function to move our cursor. 
-    private bool Move(int xDir, int yDir)
+    public virtual bool Move(int xDir, int yDir)
     {
         //Get the cursor's start location.
         Vector2 start = transform.position;
