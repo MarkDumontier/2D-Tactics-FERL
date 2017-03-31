@@ -22,7 +22,7 @@ public class CursorMove : MonoBehaviour
         rb2D = GetComponent<Rigidbody2D>();
     }
 
-    // Update is called once per frame
+    //  This needs to be fixed update to ensure the cursor gets to its destination before we check the cursor's space.
     void FixedUpdate()
     {
         //Checks for direction input. If there is direction input, attempt to move.

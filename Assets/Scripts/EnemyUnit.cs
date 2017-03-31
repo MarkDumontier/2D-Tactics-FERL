@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Priority_Queue;
 
-public class PlayerUnit : Unit {
+public class EnemyUnit : Unit {
 
     //These will store the movement cost of each terrain type for this unit.
     public int grassMove;
@@ -15,7 +15,8 @@ public class PlayerUnit : Unit {
     private Rigidbody2D rb2D;       //The Rigidbody2D of the unit.
 
     // Use this for initialization
-    void Awake () {
+    void Awake()
+    {
         //Add the movement cost of each terrain type to the moveCosts dictonary.
         moveCosts.Add("grass", grassMove);
         moveCosts.Add("woods", woodsMove);
@@ -23,12 +24,18 @@ public class PlayerUnit : Unit {
 
         rb2D = this.GetComponent<Rigidbody2D>();
     }
+
+    // Use this for initialization
+    void Start () {
+		
+	}
 	
 	// Update is called once per frame
 	void Update () {
 		
 	}
 
+    //Returns a list of all the TerrainTiles within range of this unit. Requires using Priority_Queue.
     public List<TerrainTile> ShowMoveRange()
     {
         //rb2D = this.GetComponent<Rigidbody2D>();
@@ -49,40 +56,33 @@ public class PlayerUnit : Unit {
         frontier.Enqueue(TerrainAtLocation.GetTile(rb2D.position), 0);
 
         //Continue until we are out of tiles to explore.
-        while(frontier.Count != 0)
+        while (frontier.Count != 0)
         {
             //Get the next tile in the queue.
             TerrainTile current = frontier.Dequeue();
             //Find its neighbors.
             List<TerrainTile> neighbors = TerrainAtLocation.GetNeighbors(current);
             //Add each neighbor to the frontier
-            foreach(TerrainTile next in neighbors)
+            foreach (TerrainTile next in neighbors)
             {
-                Vector2 nextCoord = next.GetLocation();
-                if (!UnitAtLocation.IsEnemyUnit(nextCoord))
-                {
-                    string tileType = next.terrainType;
+                string tileType = next.terrainType;
 
-                    //Calculate the cost to move into the next tile.
-                    int newCost = costSoFar[current] + moveCosts[tileType];
-                    //Only need to work with tiles that are within the move range of our unit.
-                    if (newCost <= movement)
+                //Calculate the cost to move into the next tile.
+                int newCost = costSoFar[current] + moveCosts[tileType];
+                //Only need to work with tiles that are within the move range of our unit.
+                if (newCost <= movement)
+                {
+                    //Check to make sure that the tile is not already in the list at a lower cost.
+                    if (!costSoFar.ContainsKey(next) || newCost < costSoFar[next])
                     {
-                        //Check to make sure that the tile is not already in the list at a lower cost.
-                        if (!costSoFar.ContainsKey(next) || newCost < costSoFar[next])
-                        {
-                            //Change the value of cost in costSoFar to the new value.
-                            costSoFar[next] = newCost;
-                            //Add next to our frontier with a priority equal to the new cost.
-                            frontier.Enqueue(next, newCost);
-                            //Add a record of where we came from to cameFrom.
-                            cameFrom.Add(next, current);
-                            //Add the tile to inRange if there is nothing on the tile.
-                            if (!UnitAtLocation.IsPresent(nextCoord))
-                            {
-                                inRange.Add(next);
-                            }
-                        }
+                        //Change the value of cost in costSoFar to the new value.
+                        costSoFar[next] = newCost;
+                        //Add next to our frontier with a priority equal to the new cost.
+                        frontier.Enqueue(next, newCost);
+                        //Add a record of where we came from to cameFrom.
+                        cameFrom.Add(next, current);
+                        //Add the tile to inRange.
+                        inRange.Add(next);
                     }
                 }
             }
@@ -91,5 +91,4 @@ public class PlayerUnit : Unit {
         return inRange;
 
     }
-
 }
