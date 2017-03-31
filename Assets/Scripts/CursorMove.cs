@@ -5,9 +5,9 @@ using UnityEngine;
 public class CursorMove : MonoBehaviour
 {
 
-    public float movementPauseTime = 0.1f;                  //Time to wait between movement steps.
+    public float movementPauseTime = 0.1f;                    //Time to wait between movement steps.
 
-    public delegate void CursorMoveAction();
+    public delegate void CursorMoveAction();                  //Initialize the delegate and event for OnMoved.
     public static event CursorMoveAction OnMoved;
 
     protected Rigidbody2D rb2D;                               //The Rigidbody2D component attached to this object.

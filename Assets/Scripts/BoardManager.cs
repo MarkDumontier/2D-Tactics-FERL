@@ -77,8 +77,12 @@ public class BoardManager : MonoBehaviour {
             }
         }
 
-        //Instantiate cursor at (0, 0)
+        //Instantiate cursor at (0, 0). Set only FreeCursorMove to be active at start
         GameObject cursorInstance = Instantiate(cursor, cursorStartPosition, Quaternion.identity) as GameObject;
+
+        //Disable all cursor modes besides free
+        CursorManager cursorManager = cursor.GetComponent<CursorManager>();
+        cursorManager.SetMode("free");
 
         //Instantiate a playerUnit at (1, 1)
         GameObject playerUnitInstance = Instantiate(playerUnit, playerStartPosition, Quaternion.identity) as GameObject;

@@ -58,7 +58,9 @@ public class PlayerUnit : Unit {
             //Add each neighbor to the frontier
             foreach(TerrainTile next in neighbors)
             {
+
                 Vector2 nextCoord = next.GetLocation();
+                //If the tile has an enemy on it, it is impassable and can be ignored.
                 if (!UnitAtLocation.IsEnemyUnit(nextCoord))
                 {
                     string tileType = next.terrainType;

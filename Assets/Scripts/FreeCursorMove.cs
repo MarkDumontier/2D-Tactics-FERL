@@ -20,6 +20,7 @@ public class FreeCursorMove : CursorMove {
 
     public override bool Move(int xDir, int yDir)
     {
+        Debug.Log("FREE");
         return base.Move(xDir, yDir);
     }
 }

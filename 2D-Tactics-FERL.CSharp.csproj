@@ -75,12 +75,13 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Assets\Scripts\BoardManager.cs" />
+    <Compile Include="Assets\Scripts\CursorManager.cs" />
     <Compile Include="Assets\Scripts\CursorMove.cs" />
-    <Compile Include="Assets\Scripts\CursorTest.cs" />
     <Compile Include="Assets\Scripts\EnemyUnit.cs" />
     <Compile Include="Assets\Scripts\FreeCursorMove.cs" />
     <Compile Include="Assets\Scripts\GameManager.cs" />
     <Compile Include="Assets\Scripts\Loader.cs" />
+    <Compile Include="Assets\Scripts\PinnedCursorMove.cs" />
     <Compile Include="Assets\Scripts\PlayerUnit.cs" />
     <Compile Include="Assets\Scripts\Priority Queue\FastPriorityQueue.cs" />
     <Compile Include="Assets\Scripts\Priority Queue\FastPriorityQueueNode.cs" />

@@ -101,4 +101,15 @@ public static class TerrainAtLocation
         return neighbors;
     }
 
+    //Takes a Vector2. Returns true if the tile is highlighted, otherwise returns false.
+    public static bool IsHighlighted(Vector2 location)
+    {
+        colliderOnSpace = Physics2D.OverlapBox(location, new Vector2(1f, 1f), 0f, LayerMask.GetMask("Highlight"));
+        if (colliderOnSpace == null)
+        {
+            return false;
+        }
+        else return true;
+    }
+
 }
