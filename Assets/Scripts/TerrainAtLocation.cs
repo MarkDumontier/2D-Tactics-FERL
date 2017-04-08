@@ -7,7 +7,6 @@ public static class TerrainAtLocation
 
     private static Collider2D colliderOnSpace; //Used to store the collider we are examining.
     private static Rigidbody2D rb2D;            //Used to store the Rigidbody2D of the tile.
-    private static int moveCost;                //Used to store the move cost value of the tile. 
 
 
     //Takes a Vector2 location. Returns true if a terrain tile exists at this location, otherwise returns false.
@@ -112,4 +111,75 @@ public static class TerrainAtLocation
         else return true;
     }
 
+    //Takes a Vector2. Returns true if the tile is highlighted, otherwise returns false.
+    public static bool IsHighlightedBlue(Vector2 location)
+    {
+        colliderOnSpace = Physics2D.OverlapBox(location, new Vector2(1f, 1f), 0f, LayerMask.GetMask("Highlight"));
+
+        if (colliderOnSpace == null)
+        {
+            return false;
+        }
+        else
+        {
+            //Get the GameObject associated with that collider.
+            GameObject gameOb = colliderOnSpace.gameObject;
+            //Check the tag of gameOb. If it is PlayerUnit, return true. Otherwise return false.
+            if (gameOb.tag == "MoveHighlight")
+            {
+                return true;
+            }
+            return false;
+        }     
+    }
+
+    //Takes a location and a distance, returns all tiles exactly that distance away.
+    public static List<TerrainTile> GetTilesAtDistance(Vector2 location, int distance)
+    {
+        List<TerrainTile> tiles = new List<TerrainTile>();
+
+        float xCoord = location.x;
+        float yCoord = location.y;
+
+        yCoord += distance;
+
+        while(yCoord > location.y)
+        {
+            if(TerrainAtLocation.IsPresent(new Vector2(xCoord, yCoord)))
+            {
+                tiles.Add(TerrainAtLocation.GetTile(new Vector2(xCoord, yCoord)));
+            }
+            yCoord--;
+            xCoord++;
+        }
+        while(xCoord > location.x)
+        {
+            if (TerrainAtLocation.IsPresent(new Vector2(xCoord, yCoord)))
+            {
+                tiles.Add(TerrainAtLocation.GetTile(new Vector2(xCoord, yCoord)));
+            };
+            yCoord--;
+            xCoord--;
+        }
+        while (yCoord < location.y)
+        {
+            if (TerrainAtLocation.IsPresent(new Vector2(xCoord, yCoord)))
+            {
+                tiles.Add(TerrainAtLocation.GetTile(new Vector2(xCoord, yCoord)));
+            }
+            yCoord++;
+            xCoord--;
+        }
+        while (xCoord < location.x)
+        {
+            if (TerrainAtLocation.IsPresent(new Vector2(xCoord, yCoord)))
+            {
+                tiles.Add(TerrainAtLocation.GetTile(new Vector2(xCoord, yCoord)));
+            }
+            yCoord++;
+            xCoord++;
+        }
+
+        return tiles;
+    }
 }

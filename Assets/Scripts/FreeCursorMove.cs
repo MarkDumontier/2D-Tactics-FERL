@@ -23,4 +23,5 @@ public class FreeCursorMove : CursorMove {
         Debug.Log("FREE");
         return base.Move(xDir, yDir);
     }
+
 }

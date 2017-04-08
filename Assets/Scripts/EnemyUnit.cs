@@ -5,15 +5,6 @@ using Priority_Queue;
 
 public class EnemyUnit : Unit {
 
-    //These will store the movement cost of each terrain type for this unit.
-    public int grassMove;
-    public int woodsMove;
-    public int mountainMove;
-
-    public int movement;            //The movement speed of this unit.
-
-    private Rigidbody2D rb2D;       //The Rigidbody2D of the unit.
-
     // Use this for initialization
     void Awake()
     {
@@ -23,6 +14,18 @@ public class EnemyUnit : Unit {
         moveCosts.Add("mountain", mountainMove);
 
         rb2D = this.GetComponent<Rigidbody2D>();
+
+        foreach (GameObject weapon in equippedWeapons)
+        {
+            Weapon weaponScript = weapon.GetComponent<Weapon>();
+            foreach (int rangeValue in weaponScript.range)
+            {
+                if (!attackRange.Contains(rangeValue))
+                {
+                    attackRange.Add(rangeValue);
+                }
+            }
+        }
     }
 
     // Use this for initialization

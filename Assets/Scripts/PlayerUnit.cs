@@ -5,14 +5,9 @@ using Priority_Queue;
 
 public class PlayerUnit : Unit {
 
-    //These will store the movement cost of each terrain type for this unit.
-    public int grassMove;
-    public int woodsMove;
-    public int mountainMove;
+    
 
-    public int movement;            //The movement speed of this unit.
-
-    private Rigidbody2D rb2D;       //The Rigidbody2D of the unit.
+    
 
     // Use this for initialization
     void Awake () {
@@ -22,6 +17,18 @@ public class PlayerUnit : Unit {
         moveCosts.Add("mountain", mountainMove);
 
         rb2D = this.GetComponent<Rigidbody2D>();
+
+        foreach(GameObject weapon in equippedWeapons)
+        {
+            Weapon weaponScript = weapon.GetComponent<Weapon>();
+            foreach(int rangeValue in weaponScript.range)
+            {
+                if(!attackRange.Contains(rangeValue))
+                {
+                    attackRange.Add(rangeValue);
+                }      
+            }
+        }
     }
 	
 	// Update is called once per frame
@@ -44,6 +51,7 @@ public class PlayerUnit : Unit {
 
         //Initialize a list of all the tiles we have been to.
         List<TerrainTile> inRange = new List<TerrainTile>();
+        inRange.Add(TerrainAtLocation.GetTile(rb2D.position));
 
         //Put the start tile (the tile the unit is currently on) in the frontier at priority 0.
         frontier.Enqueue(TerrainAtLocation.GetTile(rb2D.position), 0);
@@ -80,6 +88,7 @@ public class PlayerUnit : Unit {
                             //Add a record of where we came from to cameFrom.
                             cameFrom.Add(next, current);
                             //Add the tile to inRange if there is nothing on the tile.
+                            //TODO: Fix this logic so that the cursor can move through spaces the unit could move through.
                             if (!UnitAtLocation.IsPresent(nextCoord))
                             {
                                 inRange.Add(next);
@@ -94,4 +103,12 @@ public class PlayerUnit : Unit {
 
     }
 
+    public override bool Move(Vector2 end)
+    {
+        if (TerrainAtLocation.IsHighlighted(end))
+        {
+            return base.Move(end);
+        }
+        return false;
+    }
 }

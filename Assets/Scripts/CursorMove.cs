@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System;
 
 public class CursorMove : MonoBehaviour
 {
@@ -30,7 +31,7 @@ public class CursorMove : MonoBehaviour
     }
 
     //Checks for direction input. If there is direction input, attempt to move.
-    public void WatchForMove()
+    public virtual void WatchForMove()
     {
         int horizontal = 0;     //Used to store the horizontal move direction
         int vertical = 0;       //Used to store the vertical move direction
@@ -54,10 +55,7 @@ public class CursorMove : MonoBehaviour
                 if (didMove)
                 {
                     //If the cursor moves, trigger the OnMove event as long as something is subscribed to it.
-                    if (OnMoved != null)
-                    {
-                        OnMoved();
-                    }  
+                    TriggerOnMovedEvent();
                     //Disable movement until a given time has passed.
                     isPaused = true;
                     //Coroutine is used as a timer to re-enable movement after a given time.
@@ -88,9 +86,17 @@ public class CursorMove : MonoBehaviour
     }
 
     //Coroutine that re-enables movement after a given time
-    IEnumerator PauseMovement()
+    public virtual IEnumerator PauseMovement()
     {
         yield return new WaitForSeconds(movementPauseTime);
         isPaused = false;
+    }
+
+    public void TriggerOnMovedEvent()
+    {
+        if (OnMoved != null)
+        {
+            OnMoved();
+        }
     }
 }
