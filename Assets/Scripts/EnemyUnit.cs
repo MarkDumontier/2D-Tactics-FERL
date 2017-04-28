@@ -38,8 +38,7 @@ public class EnemyUnit : Unit {
 		
 	}
 
-    //Returns a list of all the TerrainTiles within range of this unit. Requires using Priority_Queue.
-    public List<TerrainTile> ShowMoveRange()
+    public override List<TerrainTile> ShowMoveRange()
     {
         //rb2D = this.GetComponent<Rigidbody2D>();
         //Initialize the frontier queue to store the tiles we have yet to investigate.
@@ -54,6 +53,7 @@ public class EnemyUnit : Unit {
 
         //Initialize a list of all the tiles we have been to.
         List<TerrainTile> inRange = new List<TerrainTile>();
+        inRange.Add(TerrainAtLocation.GetTile(rb2D.position));
 
         //Put the start tile (the tile the unit is currently on) in the frontier at priority 0.
         frontier.Enqueue(TerrainAtLocation.GetTile(rb2D.position), 0);
@@ -68,24 +68,33 @@ public class EnemyUnit : Unit {
             //Add each neighbor to the frontier
             foreach (TerrainTile next in neighbors)
             {
-                string tileType = next.terrainType;
 
-                //Calculate the cost to move into the next tile.
-                int newCost = costSoFar[current] + moveCosts[tileType];
-                //Only need to work with tiles that are within the move range of our unit.
-                if (newCost <= movement)
+                Vector2 nextCoord = next.GetLocation();
+                //If the tile has an enemy on it, it is impassable and can be ignored.
+                if (!UnitAtLocation.IsPlayerUnit(nextCoord))
                 {
-                    //Check to make sure that the tile is not already in the list at a lower cost.
-                    if (!costSoFar.ContainsKey(next) || newCost < costSoFar[next])
+                    string tileType = next.terrainType;
+
+                    //Calculate the cost to move into the next tile.
+                    int newCost = costSoFar[current] + moveCosts[tileType];
+                    //Only need to work with tiles that are within the move range of our unit.
+                    if (newCost <= movement)
                     {
-                        //Change the value of cost in costSoFar to the new value.
-                        costSoFar[next] = newCost;
-                        //Add next to our frontier with a priority equal to the new cost.
-                        frontier.Enqueue(next, newCost);
-                        //Add a record of where we came from to cameFrom.
-                        cameFrom.Add(next, current);
-                        //Add the tile to inRange.
-                        inRange.Add(next);
+                        //Check to make sure that the tile is not already in the list at a lower cost.
+                        if (!costSoFar.ContainsKey(next) || newCost < costSoFar[next])
+                        {
+                            //Change the value of cost in costSoFar to the new value.
+                            costSoFar[next] = newCost;
+                            //Add next to our frontier with a priority equal to the new cost.
+                            frontier.Enqueue(next, newCost);
+                            //Add a record of where we came from to cameFrom.
+                            cameFrom.Add(next, current);
+                            //Add the tile to inRange if there is nothing on the tile.
+                            if (!UnitAtLocation.IsPresent(nextCoord))
+                            {
+                                inRange.Add(next);
+                            }
+                        }
                     }
                 }
             }
@@ -94,4 +103,5 @@ public class EnemyUnit : Unit {
         return inRange;
 
     }
+
 }

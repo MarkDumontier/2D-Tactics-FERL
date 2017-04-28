@@ -7,7 +7,7 @@ public class UnitAtLocation
 {
 
     private static Collider2D colliderOnSpace; //Used to store the collider we are examining
-    
+
 
     //Takes a Vector2 location. Returns true if a unit exists at this location, otherwise returns false.
     public static bool IsPresent(Vector2 location)
@@ -77,6 +77,19 @@ public class UnitAtLocation
         GameObject gameOb = colliderOnSpace.gameObject;
         //Get the PlayerUnit script.
         PlayerUnit unit = gameOb.GetComponent<PlayerUnit>();
+        //Return the PlayerUnit script.
+        return unit;
+    }
+
+    //Takes a Vector2 location. Returns the PlayerUnit of the unit on this location.
+    public static Unit GetUnit(Vector2 location)
+    {
+        //Get the Collider2D of the unit.
+        colliderOnSpace = GetCollider(location);
+        //Get the GameObject associated with that collider.
+        GameObject gameOb = colliderOnSpace.gameObject;
+        //Get the PlayerUnit script.
+        Unit unit = gameOb.GetComponent<Unit>();
         //Return the PlayerUnit script.
         return unit;
     }

@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class PinnedCursorMove : CursorMove {
 
-    CursorManager cursorManager;                        //Used tos tore a reference to our CursorManager script.
+    CursorManager cursorManager;                        //Used to store a reference to our CursorManager script.
 
     private bool moveButtonHeld;
 

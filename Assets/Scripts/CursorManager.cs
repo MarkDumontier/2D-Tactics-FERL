@@ -10,13 +10,18 @@ public class CursorManager : MonoBehaviour
 
     public GameObject blueTransparency;                             //The blue transparent tile to highlight movement;
     public GameObject redTransparency;                              //The red transparent tile to highlight attack range;
+    public GameObject redThreatTile;                                //The red transparent tile to highlight enemy threat range;
+    public GameObject redThreatBorder;                              //The red border line to highlight enemy threat range;
+
 
     private PlayerUnit pinnedUnit;                                  //Holds the PlayerUnit script of the unit the cursor is pinned to.
     private Vector2 unitStart;                                      //Holds the start location of the pinned unit.
 
     private Rigidbody2D rb2D;                                       //The Rigidbody2D coponent attached to this object
-    private bool hasJustMoved;                                      //Stores a bool to keep track of whether the cursor has jsut moved.
     private Transform highlightHolder;                              //A variable to store a reference to the transform of our highlight object used for organizing the heiarchy.
+    private Transform threatZoneHolder;                             //A variable to store a reference to the transform of our enemy threat zones.
+
+    private List<Unit> threatHighlightedEnemies;
 
     private FreeCursorMove freeMode;                                //Holds our FreeCursorMove script.
     private PinnedCursorMove pinnedMode;                            //Holds our PinnedCursorMove script.
@@ -41,8 +46,10 @@ public class CursorManager : MonoBehaviour
         //Get a reference to the Rigidbody2D of the cursor
         rb2D = GetComponent<Rigidbody2D>();
 
-        //Initialize the transform to hold all our highlight tiles.
+        //Initialize the transforms to hold all our highlight tiles.
         highlightHolder = new GameObject("Highlight").transform;
+        threatZoneHolder = new GameObject("ThreatZone").transform;
+        threatHighlightedEnemies = new List<Unit>();
 
         //Initialize the cursor move mode scripts.
         freeMode = GetComponent<FreeCursorMove>();
@@ -51,8 +58,8 @@ public class CursorManager : MonoBehaviour
 
     void Update()
     {
-        //Watch for Fire1 press. If over a player unit, highlights its range and pins the cursor to it.
-        if (Input.GetButtonDown("Fire1"))
+            //Watch for Fire1 press. If over a player unit, highlights its range and pins the cursor to it.
+            if (Input.GetButtonDown("Fire1"))
         {
             //Free mode options
             if (freeMode.enabled)
@@ -66,7 +73,17 @@ public class CursorManager : MonoBehaviour
                 //If the unit here is an enemy unit, create an attack range preview.
                 else if (UnitAtLocation.IsEnemyUnit(rb2D.position))
                 {
-                    //Create enemy attack preview 
+                    //Create enemy attack preview
+                    Unit unit = UnitAtLocation.GetUnit(rb2D.position);
+                    if (threatHighlightedEnemies.Contains(unit))
+                    {
+                        threatHighlightedEnemies.Remove(unit);
+                    }
+                    else
+                    {
+                        threatHighlightedEnemies.Add(unit);
+                    }
+                    EnemyAttackPreview();
                 }
                 //If there is nothing here, open menu.
                 else if (!UnitAtLocation.IsPresent(rb2D.position))
@@ -92,15 +109,16 @@ public class CursorManager : MonoBehaviour
                         {
                             Destroy(child.gameObject);
                         }
+                        //Redraw the threat highlighting of enemy units
+                        StartCoroutine("RefreshAttackPreview");
+
                         //set mode attack
+
                     }
                    
                 }
             }   
         }
-
-        //If the cursor moves, reset highlighting.
-        HighlightMoveRange();
 
         //Fire2 cancels pinned mode if active
         if (Input.GetButtonDown("Fire2"))
@@ -124,70 +142,62 @@ public class CursorManager : MonoBehaviour
     //If the cursor has just moved, check if there is a player unit at the cursor's location. If there is, highlight its move range.
     void HighlightMoveRange()
     {
-        //Only need to update if the cursor has just moved.
-        if (hasJustMoved == true)
+        //Only change the highlighting if cursor is in free move mode.
+        if (freeMode.enabled)
         {
-            //Only change the highlighting if cursor is in free move mode.
-            if (freeMode.enabled)
+            //Clear any previous highlights if in free mode
+            foreach (Transform child in highlightHolder)
             {
-                //Clear any previous highlights if in free mode
-                foreach (Transform child in highlightHolder)
-                {
-                    Destroy(child.gameObject);
-                }
-
-                rb2D = GetComponent<Rigidbody2D>();
-                if (UnitAtLocation.IsPlayerUnit(rb2D.position))
-                {
-                    //Get a reference to the unit the cursor is over.
-                    PlayerUnit unit = UnitAtLocation.GetPlayerUnit(rb2D.position);
-
-                    //Initialize a list to hold all tiles within move range.
-                    List<TerrainTile> inMoveRange = unit.ShowMoveRange();
-
-                    //For each tile in move range, display a blue transparency over the tile.
-                    foreach (TerrainTile tile in inMoveRange)
-                    {
-                        GameObject blueMoveTile = Instantiate(blueTransparency, tile.GetLocation(), Quaternion.identity) as GameObject;
-                        //Add the tile to the highlightHolder so it can be managed more easily
-                        blueMoveTile.transform.SetParent(highlightHolder);
-                    }
-
-                    //Initialize a list to hold all tiles within attack range.
-                    List<TerrainTile> inAttackRange = new List<TerrainTile>();
-
-                    //For each tile in move range, find all tiles in attack range and add them to a list.
-                    foreach(TerrainTile tile in inMoveRange)
-                    {
-                        inAttackRange.AddRange(unit.GetThreatenedTiles(tile.GetLocation()));
-                    }
-
-                    //For each tile in the attack range list, display a red transparency if the tile is not already highlighted.
-                    foreach (TerrainTile tile in inAttackRange)
-                    {
-                        if (!TerrainAtLocation.IsHighlighted(tile.GetLocation())){
-                            GameObject redMoveTile = Instantiate(redTransparency, tile.GetLocation(), Quaternion.identity) as GameObject;
-                            //Add the tile to the highlightHolder so it can be managed more easily
-                            redMoveTile.transform.SetParent(highlightHolder);
-                        }
-                    }
-                    
-
-                }
-                else
-                {
-                    Debug.Log("Nothing here.");
-                } 
+                Destroy(child.gameObject);
             }
-            hasJustMoved = false;
+
+            rb2D = GetComponent<Rigidbody2D>();
+            if (UnitAtLocation.IsPresent(rb2D.position))
+            {
+                //Get a reference to the unit the cursor is over.
+                Unit unit = UnitAtLocation.GetUnit(rb2D.position);
+
+                //Initialize a list to hold all tiles within move range.
+                List<TerrainTile> inMoveRange = unit.ShowMoveRange();
+
+                //For each tile in move range, display a blue transparency over the tile.
+                foreach (TerrainTile tile in inMoveRange)
+                {
+                    GameObject blueMoveTile = Instantiate(blueTransparency, tile.GetLocation(), Quaternion.identity) as GameObject;
+                    //Add the tile to the highlightHolder so it can be managed more easily
+                    blueMoveTile.transform.SetParent(highlightHolder);
+                }
+
+                //Initialize a list to hold all tiles within attack range.
+                List<TerrainTile> inAttackRange = new List<TerrainTile>();
+
+                //For each tile in move range, find all tiles in attack range and add them to a list.
+                foreach(TerrainTile tile in inMoveRange)
+                {
+                    inAttackRange.AddRange(unit.GetThreatenedTiles(tile.GetLocation()));
+                }
+
+                //For each tile in the attack range list, display a red transparency if the tile is not already highlighted.
+                foreach (TerrainTile tile in inAttackRange)
+                {
+                    if (!TerrainAtLocation.IsHighlighted(tile.GetLocation())){
+                        GameObject redMoveTile = Instantiate(redTransparency, tile.GetLocation(), Quaternion.identity) as GameObject;
+                        //Add the tile to the highlightHolder so it can be managed more easily
+                        redMoveTile.transform.SetParent(highlightHolder);
+                    }
+                }
+            }
+            else
+            {
+                Debug.Log("Nothing here.");
+            } 
         }
     }
 
     //This event occurs after the cursor moves. Should only be thrown during the FixedUpdate so that the cursor has time to move before its position is checked again.
     void MoveEvent()
     {
-        Debug.Log("OnMoved Triggered");
-        hasJustMoved = true;
+        StartCoroutine("RefreshHighlight");
     }
 
     //Pin the cursor to the selected player unit.
@@ -233,5 +243,93 @@ public class CursorManager : MonoBehaviour
     public PlayerUnit GetPinnedUnit()
     {
         return pinnedUnit;
+    }
+
+
+    //Highlights the threat range of an enemy unit
+    void EnemyAttackPreview()
+    {
+        //Clear old threat highlights
+        foreach (Transform child in threatZoneHolder)
+        {
+            Destroy(child.gameObject);
+        }
+
+        List<TerrainTile> threatHighlight = new List<TerrainTile>();
+
+        foreach (Unit unit in threatHighlightedEnemies)
+        {
+            List<TerrainTile> threatZone = unit.GetThreatZone();
+            
+
+            //For each tile in the attack range list, display a red transparency if the tile is not already highlighted.
+            foreach (TerrainTile tile in threatZone)
+            {
+                if (!TerrainAtLocation.IsThreatHighlighted(tile.GetLocation()))
+                {
+                    GameObject threatTile = Instantiate(redThreatTile, tile.GetLocation(), Quaternion.identity) as GameObject;
+                    //Add the tile to threatZoneHolder so it can be managed more easily
+                    threatTile.transform.SetParent(threatZoneHolder);
+                    threatHighlight.Add(tile);
+                }
+            }
+        }
+
+        //Add the red border around the threat zone.
+        foreach (TerrainTile tile in threatHighlight)
+        {
+            Vector2 tileLocation = tile.GetLocation();
+            //Neighbor holds the location of the neighboring tile.
+            Vector2 neighbor = new Vector2();
+
+            float xCoord = tileLocation.x;
+            float yCoord = tileLocation.y;
+
+            //North neighbor
+            neighbor = new Vector2(xCoord, yCoord + 1);
+            if (!TerrainAtLocation.IsThreatHighlighted(neighbor) && TerrainAtLocation.IsPresent(neighbor))
+            {
+                GameObject redBorderLine = Instantiate(redThreatBorder, tile.GetLocation(), Quaternion.Euler(0, 0, 270)) as GameObject;
+                redBorderLine.transform.SetParent(threatZoneHolder);
+            }
+
+            //West neighbor
+            neighbor = new Vector2(xCoord + 1, yCoord);
+            if (!TerrainAtLocation.IsThreatHighlighted(neighbor) && TerrainAtLocation.IsPresent(neighbor))
+            {
+                GameObject redBorderLine = Instantiate(redThreatBorder, tile.GetLocation(), Quaternion.Euler(0, 0, 180)) as GameObject;
+                redBorderLine.transform.SetParent(threatZoneHolder);
+            }
+
+            //South neighbor
+            neighbor = new Vector2(xCoord, yCoord - 1);
+            if (!TerrainAtLocation.IsThreatHighlighted(neighbor) && TerrainAtLocation.IsPresent(neighbor))
+            {
+                GameObject redBorderLine = Instantiate(redThreatBorder, tile.GetLocation(), Quaternion.Euler(0, 0, 90)) as GameObject;
+                redBorderLine.transform.SetParent(threatZoneHolder);
+            }
+
+            //East neighbor
+            neighbor = new Vector2(xCoord - 1, yCoord);
+            if (!TerrainAtLocation.IsThreatHighlighted(neighbor) && TerrainAtLocation.IsPresent(neighbor))
+            {
+                GameObject redBorderLine = Instantiate(redThreatBorder, tile.GetLocation(), Quaternion.Euler(0, 0, 0)) as GameObject;
+                redBorderLine.transform.SetParent(threatZoneHolder);
+            }
+        }
+    }
+
+    IEnumerator RefreshAttackPreview()
+    {
+        yield return new WaitForFixedUpdate();
+        EnemyAttackPreview();
+        yield return null;
+    }
+
+    IEnumerator RefreshHighlight()
+    {
+        yield return new WaitForFixedUpdate();
+        HighlightMoveRange();
+        yield return null;
     }
 }

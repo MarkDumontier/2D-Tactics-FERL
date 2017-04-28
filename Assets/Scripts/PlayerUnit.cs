@@ -36,7 +36,7 @@ public class PlayerUnit : Unit {
 		
 	}
 
-    public List<TerrainTile> ShowMoveRange()
+    public override List<TerrainTile> ShowMoveRange()
     {
         //rb2D = this.GetComponent<Rigidbody2D>();
         //Initialize the frontier queue to store the tiles we have yet to investigate.
@@ -57,14 +57,14 @@ public class PlayerUnit : Unit {
         frontier.Enqueue(TerrainAtLocation.GetTile(rb2D.position), 0);
 
         //Continue until we are out of tiles to explore.
-        while(frontier.Count != 0)
+        while (frontier.Count != 0)
         {
             //Get the next tile in the queue.
             TerrainTile current = frontier.Dequeue();
             //Find its neighbors.
             List<TerrainTile> neighbors = TerrainAtLocation.GetNeighbors(current);
             //Add each neighbor to the frontier
-            foreach(TerrainTile next in neighbors)
+            foreach (TerrainTile next in neighbors)
             {
 
                 Vector2 nextCoord = next.GetLocation();

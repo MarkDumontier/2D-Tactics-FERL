@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Priority_Queue;
 
 public class Unit : MonoBehaviour {
 
@@ -20,7 +21,6 @@ public class Unit : MonoBehaviour {
 
     // Use this for initialization
     void Awake () {
-		
 	}
 	
 	// Update is called once per frame
@@ -49,5 +49,26 @@ public class Unit : MonoBehaviour {
             tilesInRange.AddRange(TerrainAtLocation.GetTilesAtDistance(location, rangeValue));
         }
         return tilesInRange;
+    }
+
+    public virtual List<TerrainTile> ShowMoveRange()
+    {
+        return null;
+    }
+
+    public List<TerrainTile> GetThreatZone()
+    {
+        List<TerrainTile> inMoveRange = ShowMoveRange();
+
+        //Initialize a list to hold all tiles within attack range.
+        List<TerrainTile> inAttackRange = new List<TerrainTile>();
+
+        //For each tile in move range, find all tiles in attack range and add them to a list.
+        foreach (TerrainTile tile in inMoveRange)
+        {
+            inAttackRange.AddRange(GetThreatenedTiles(tile.GetLocation()));
+        }
+
+        return inAttackRange;
     }
 }

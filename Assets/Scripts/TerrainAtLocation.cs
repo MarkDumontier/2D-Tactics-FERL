@@ -112,6 +112,17 @@ public static class TerrainAtLocation
     }
 
     //Takes a Vector2. Returns true if the tile is highlighted, otherwise returns false.
+    public static bool IsThreatHighlighted(Vector2 location)
+    {
+        colliderOnSpace = Physics2D.OverlapBox(location, new Vector2(1f, 1f), 0f, LayerMask.GetMask("ThreatHighlight"));
+        if (colliderOnSpace == null)
+        {
+            return false;
+        }
+        else return true;
+    }
+
+    //Takes a Vector2. Returns true if the tile is highlighted, otherwise returns false.
     public static bool IsHighlightedBlue(Vector2 location)
     {
         colliderOnSpace = Physics2D.OverlapBox(location, new Vector2(1f, 1f), 0f, LayerMask.GetMask("Highlight"));
